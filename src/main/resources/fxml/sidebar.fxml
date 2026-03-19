@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.doceditor.ui.controller.SidebarController"
+      styleClass="sidebar" spacing="0">
+
+    <!-- Header + New button -->
+    <HBox styleClass="sidebar-header" alignment="CENTER_LEFT" spacing="8">
+        <padding><Insets top="12" bottom="12" left="12" right="8"/></padding>
+        <Label text="Documents" styleClass="sidebar-title" HBox.hgrow="ALWAYS"/>
+        <Button fx:id="newDocBtn" text="+" styleClass="btn-icon" onAction="#onNewDocument">
+            <tooltip><Tooltip text="New document (Ctrl+N)"/></tooltip>
+        </Button>
+    </HBox>
+
+    <!-- Search -->
+    <HBox styleClass="sidebar-search-bar">
+        <padding><Insets top="6" bottom="6" left="10" right="10"/></padding>
+        <TextField fx:id="searchField" promptText="Filter…" styleClass="search-field"
+                   HBox.hgrow="ALWAYS" onKeyReleased="#onFilter"/>
+    </HBox>
+
+    <!-- Document list -->
+    <ListView fx:id="documentList" VBox.vgrow="ALWAYS" styleClass="doc-list"/>
+
+</VBox>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.doceditor.ui.controller.MainController"
+            stylesheets="@../css/dark-theme.css"
+            prefWidth="1200" prefHeight="760">
+
+    <!-- Top: Menu bar -->
+    <top>
+        <MenuBar fx:id="menuBar" styleClass="menu-bar">
+            <Menu text="File">
+                <MenuItem fx:id="newDocItem"    text="New Document"  accelerator="Ctrl+N"    onAction="#onNewDocument"/>
+                <MenuItem fx:id="saveDocItem"   text="Save"          accelerator="Ctrl+S"    onAction="#onSave"/>
+                <MenuItem fx:id="deleteDocItem" text="Delete"        onAction="#onDelete"/>
+                <SeparatorMenuItem/>
+                <MenuItem fx:id="quitItem"      text="Quit"          accelerator="Ctrl+Q"    onAction="#onQuit"/>
+            </Menu>
+            <Menu text="Export">
+                <MenuItem fx:id="exportMdItem"   text="Export as Markdown…"  onAction="#onExportMarkdown"/>
+                <MenuItem fx:id="exportDocxItem" text="Export as DOCX…"      onAction="#onExportDocx"/>
+                <MenuItem fx:id="exportPdfItem"  text="Export as PDF…"       onAction="#onExportPdf"/>
+            </Menu>
+            <Menu text="Help">
+                <MenuItem text="About" onAction="#onAbout"/>
+            </Menu>
+        </MenuBar>
+    </top>
+
+    <!-- Center: Sidebar + Editor split -->
+    <center>
+        <SplitPane fx:id="mainSplit" dividerPositions="0.22">
+            <!-- Sidebar -->
+            <fx:include fx:id="sidebar" source="sidebar.fxml"/>
+            <!-- Editor + toolbar -->
+            <fx:include fx:id="editor"  source="editor.fxml"/>
+        </SplitPane>
+    </center>
+
+    <!-- Bottom: Status bar -->
+    <bottom>
+        <HBox styleClass="status-bar" spacing="8" alignment="CENTER_LEFT">
+            <padding><Insets top="4" bottom="4" left="12" right="12"/></padding>
+            <Label fx:id="statusLabel" text="Ready" styleClass="status-text"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="dirtyIndicator" text="" styleClass="dirty-dot"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

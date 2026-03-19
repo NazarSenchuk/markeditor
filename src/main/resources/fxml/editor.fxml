@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.web.WebView?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.doceditor.ui.controller.EditorController"
+      styleClass="editor-pane" spacing="0">
+
+    <!-- Toolbar -->
+    <HBox fx:id="toolbar" styleClass="toolbar" spacing="6" alignment="CENTER_LEFT">
+        <padding><Insets top="6" bottom="6" left="12" right="12"/></padding>
+
+        <TextField fx:id="titleField" promptText="Document title…"
+                   styleClass="title-field" prefWidth="240"/>
+
+        <Separator orientation="VERTICAL"/>
+
+        <!-- Markdown insert shortcuts -->
+        <Button fx:id="btnH1"    text="H1"    styleClass="btn-fmt" onAction="#insertH1"/>
+        <Button fx:id="btnH2"    text="H2"    styleClass="btn-fmt" onAction="#insertH2"/>
+        <Button fx:id="btnH3"    text="H3"    styleClass="btn-fmt" onAction="#insertH3"/>
+        <Separator orientation="VERTICAL"/>
+        <Button fx:id="btnBold"  text="B"     styleClass="btn-fmt btn-bold"   onAction="#insertBold"/>
+        <Button fx:id="btnItal"  text="I"     styleClass="btn-fmt btn-italic" onAction="#insertItalic"/>
+        <Separator orientation="VERTICAL"/>
+        <Button fx:id="btnList"  text="• List"  styleClass="btn-fmt" onAction="#insertList"/>
+        <Button fx:id="btnOList" text="1. List" styleClass="btn-fmt" onAction="#insertOrderedList"/>
+        <Button fx:id="btnTable" text="Table"   styleClass="btn-fmt" onAction="#insertTable"/>
+        <Button fx:id="btnCode"  text="` Code"  styleClass="btn-fmt" onAction="#insertCode"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- Preview toggle -->
+        <ToggleButton fx:id="previewToggle" text="Preview" styleClass="btn-toggle"
+                      onAction="#onTogglePreview"/>
+    </HBox>
+
+    <!-- Editor / Preview area -->
+    <SplitPane fx:id="editorSplit" VBox.vgrow="ALWAYS" dividerPositions="0.5">
+        <!-- Left: raw Markdown editor (CodeArea from RichTextFX) -->
+        <StackPane fx:id="editorPane" styleClass="editor-wrapper"/>
+
+        <!-- Right: HTML preview (hidden by default, toggle shows it) -->
+        <VBox fx:id="previewPane" styleClass="preview-pane">
+            <WebView fx:id="previewView" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </SplitPane>
+
+</VBox>
