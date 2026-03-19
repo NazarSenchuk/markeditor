@@ -69,13 +69,13 @@ public class MainController implements Initializable {
         FileChooser fc = new FileChooser();
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("DOCX", "*.docx"));
         File tpl = fc.showOpenDialog(getStage());
-        exportService.exportDocx(viewModel.getCurrentDocument(), dir, tpl != null ? tpl.toPath() : null);
+        exportService.exportDocx(viewModel.getCurrentDocument(), dir, tpl != null ? tpl.toPath() : null, viewModel.numberSectionsProperty().get(), viewModel.tableOfContentsProperty().get());
     }
 
     @FXML private void onExportPdf() {
         if (!validate()) return;
         Path dir = pickDir(); if (dir == null) return;
-        exportService.exportPdf(viewModel.getCurrentDocument(), dir);
+        exportService.exportPdf(viewModel.getCurrentDocument(), dir, viewModel.numberSectionsProperty().get(), viewModel.tableOfContentsProperty().get());
     }
 
     @FXML private void onAbout() {

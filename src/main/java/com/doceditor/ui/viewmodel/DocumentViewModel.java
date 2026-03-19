@@ -14,6 +14,8 @@ public class DocumentViewModel {
     private final StringProperty documentTitle = new SimpleStringProperty("Untitled");
     private final BooleanProperty isDirty = new SimpleBooleanProperty(false);
     private final StringProperty statusMessage = new SimpleStringProperty("Ready");
+    private final BooleanProperty numberSections = new SimpleBooleanProperty(false);
+    private final BooleanProperty tableOfContents = new SimpleBooleanProperty(false);
     private final DocumentService documentService;
     private boolean loading = false;
 
@@ -21,6 +23,8 @@ public class DocumentViewModel {
         this.documentService = documentService;
         markdownContent.addListener((obs, old, newVal) -> { if (!loading) isDirty.set(true); });
         documentTitle.addListener((obs, old, newVal) -> { if (!loading) isDirty.set(true); });
+        numberSections.addListener((obs, old, newVal) -> { if (!loading) isDirty.set(true); });
+        tableOfContents.addListener((obs, old, newVal) -> { if (!loading) isDirty.set(true); });
     }
 
     public void loadAllDocuments() {
@@ -74,6 +78,8 @@ public class DocumentViewModel {
     public StringProperty documentTitleProperty() { return documentTitle; }
     public BooleanProperty isDirtyProperty() { return isDirty; }
     public StringProperty statusMessageProperty() { return statusMessage; }
+    public BooleanProperty numberSectionsProperty() { return numberSections; }
+    public BooleanProperty tableOfContentsProperty() { return tableOfContents; }
     public Document getCurrentDocument() { return currentDocument.get(); }
     public boolean isDirty() { return isDirty.get(); }
 }

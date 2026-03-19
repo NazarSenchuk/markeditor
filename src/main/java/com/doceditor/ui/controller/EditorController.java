@@ -6,7 +6,6 @@ import com.doceditor.ui.viewmodel.DocumentViewModel;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.IndexRange;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -33,6 +32,8 @@ public class EditorController implements Initializable {
     @FXML private SplitPane editorSplit;
     @FXML private TextField titleField;
     @FXML private ToggleButton previewToggle;
+    @FXML private ToggleButton numberToggle;
+    @FXML private ToggleButton tocToggle;
 
     private DocumentViewModel viewModel;
     private CodeArea codeArea;
@@ -81,21 +82,14 @@ public class EditorController implements Initializable {
             }
         });
         codeArea.textProperty().addListener((obs, old, text) -> vm.markdownContentProperty().set(text));
+        numberToggle.selectedProperty().bindBidirectional(vm.numberSectionsProperty());
+        tocToggle.selectedProperty().bindBidirectional(vm.tableOfContentsProperty());
+        vm.numberSectionsProperty().addListener((obs, old, val) -> { if (previewPane.isVisible()) refreshPreview(codeArea.getText()); });
+        vm.tableOfContentsProperty().addListener((obs, old, val) -> { if (previewPane.isVisible()) refreshPreview(codeArea.getText()); });
     }
 
     public void setPandoc(PandocRunner pandoc) { this.pandoc = pandoc; }
 
-    @FXML private void insertH1() { insertAtCursor("# "); }
-    @FXML private void insertH2() { insertAtCursor("## "); }
-    @FXML private void insertH3() { insertAtCursor("### "); }
-    @FXML private void insertBold() { wrapSelection("**", "**"); }
-    @FXML private void insertItalic() { wrapSelection("*", "*"); }
-    @FXML private void insertList() { insertAtCursor("- "); }
-    @FXML private void insertOrderedList() { insertAtCursor("1. "); }
-    @FXML private void insertCode() { wrapSelection("`", "`"); }
-    @FXML private void insertTable() {
-        insertAtCursor("| Col 1 | Col 2 |\n|---|---|\n| Cell | Cell |\n");
-    }
 
     @FXML private void onTogglePreview() {
         boolean show = previewToggle.isSelected();
@@ -105,23 +99,6 @@ public class EditorController implements Initializable {
         if (show) refreshPreview(codeArea.getText());
     }
 
-    private void insertAtCursor(String snippet) {
-        int pos = codeArea.getCaretPosition();
-        codeArea.insertText(pos, snippet);
-        codeArea.moveTo(pos + snippet.length());
-        codeArea.requestFocus();
-    }
-
-    private void wrapSelection(String prefix, String suffix) {
-        IndexRange sel = codeArea.getSelection();
-        if (sel.getLength() == 0) {
-            insertAtCursor(prefix + suffix);
-            codeArea.moveTo(codeArea.getCaretPosition() - suffix.length());
-        } else {
-            codeArea.replaceSelection(prefix + codeArea.getSelectedText() + suffix);
-        }
-        codeArea.requestFocus();
-    }
 
     private void schedulePreviewRefresh(String text) {
         if (pendingRefresh != null) pendingRefresh.cancel(false);
@@ -134,7 +111,7 @@ public class EditorController implements Initializable {
         if (pandoc == null || viewModel.getCurrentDocument() == null) return;
         try {
             String formatted = com.doceditor.export.MarkdownFormatter.formatMath(markdown);
-            String html = pandoc.toHtml(formatted, true)
+            String html = pandoc.toHtml(formatted, true, viewModel.numberSectionsProperty().get(), viewModel.tableOfContentsProperty().get())
                     .replace("</head>", "<link rel=\"stylesheet\" href=\"/css/preview.css\"></head>");
             previewServer.setCurrentHtml(html);
             Platform.runLater(() -> previewView.getEngine().load("http://localhost:" + previewServer.getPort() + "/"));

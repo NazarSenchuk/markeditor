@@ -31,17 +31,17 @@ public class ExportService {
         }
     }
 
-    public Path exportDocx(Document doc, Path outputDir, Path templateDocx) {
+    public Path exportDocx(Document doc, Path outputDir, Path templateDocx, boolean numberSections, boolean toc) {
         Path mdFile = writeTempMd(doc);
         Path outFile = outputDir.resolve(safeFilename(doc.getTitle()) + ".docx");
-        pandoc.toDocx(mdFile, outFile, templateDocx);
+        pandoc.toDocx(mdFile, outFile, templateDocx, numberSections, toc);
         return outFile;
     }
 
-    public Path exportPdf(Document doc, Path outputDir) {
+    public Path exportPdf(Document doc, Path outputDir, boolean numberSections, boolean toc) {
         Path mdFile = writeTempMd(doc);
         Path tempDocx = tempDir.resolve(doc.getId() + ".temp.docx");
-        pandoc.toDocx(mdFile, tempDocx, null);
+        pandoc.toDocx(mdFile, tempDocx, null, numberSections, toc);
         Path outFile = outputDir.resolve(safeFilename(doc.getTitle()) + ".pdf");
         pandoc.fromDocxToPdf(tempDocx, outFile);
         try { Files.deleteIfExists(tempDocx); } catch (IOException ignored) {}

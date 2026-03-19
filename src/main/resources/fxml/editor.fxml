@@ -17,18 +17,8 @@
 
         <Separator orientation="VERTICAL"/>
 
-        <!-- Markdown insert shortcuts -->
-        <Button fx:id="btnH1"    text="H1"    styleClass="btn-fmt" onAction="#insertH1"/>
-        <Button fx:id="btnH2"    text="H2"    styleClass="btn-fmt" onAction="#insertH2"/>
-        <Button fx:id="btnH3"    text="H3"    styleClass="btn-fmt" onAction="#insertH3"/>
-        <Separator orientation="VERTICAL"/>
-        <Button fx:id="btnBold"  text="B"     styleClass="btn-fmt btn-bold"   onAction="#insertBold"/>
-        <Button fx:id="btnItal"  text="I"     styleClass="btn-fmt btn-italic" onAction="#insertItalic"/>
-        <Separator orientation="VERTICAL"/>
-        <Button fx:id="btnList"  text="• List"  styleClass="btn-fmt" onAction="#insertList"/>
-        <Button fx:id="btnOList" text="1. List" styleClass="btn-fmt" onAction="#insertOrderedList"/>
-        <Button fx:id="btnTable" text="Table"   styleClass="btn-fmt" onAction="#insertTable"/>
-        <Button fx:id="btnCode"  text="` Code"  styleClass="btn-fmt" onAction="#insertCode"/>
+        <ToggleButton fx:id="numberToggle" text="1.2.3" styleClass="btn-toggle"/>
+        <ToggleButton fx:id="tocToggle" text="TOC" styleClass="btn-toggle"/>
 
         <Region HBox.hgrow="ALWAYS"/>
 

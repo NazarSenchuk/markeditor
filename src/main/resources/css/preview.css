@@ -66,17 +66,29 @@ table th {
 }
 
 code {
-    background-color: #f4f4f4;
-    padding: 2px 4px;
-    border-radius: 4px;
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    background-color: #f6f8fa;
+    padding: 0.2em 0.4em;
+    border-radius: 6px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 85%;
+    border: 1px solid #e1e4e8;
 }
 
 pre {
-    background-color: #f4f4f4;
-    padding: 15px;
+    background-color: #f6f8fa;
+    padding: 16px;
     border-radius: 8px;
     overflow-x: auto;
+    border: 1px solid #e1e4e8;
+    line-height: 1.45;
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    font-size: 90%;
+    color: inherit;
 }
 
 blockquote {
