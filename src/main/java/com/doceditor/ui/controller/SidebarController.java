@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 
 public class SidebarController implements Initializable {
     @FXML private ListView<Document> documentList;
+    @FXML private ListView<String> templateList;
     @FXML private TextField searchField;
     private DocumentViewModel viewModel;
     private MainController mainController;
@@ -43,12 +44,30 @@ public class SidebarController implements Initializable {
         vm.currentDocumentProperty().addListener((obs, old, doc) -> {
             if (doc != null && !doc.equals(documentList.getSelectionModel().getSelectedItem())) documentList.getSelectionModel().select(doc);
         });
+
+        templateList.setItems(vm.templatesProperty());
+        templateList.getSelectionModel().selectedItemProperty().addListener((obs, old, sel) -> {
+            if (sel != null) vm.selectedTemplateProperty().set(sel);
+        });
+        vm.selectedTemplateProperty().addListener((obs, old, sel) -> {
+            if (sel != null && !sel.equals(templateList.getSelectionModel().getSelectedItem())) templateList.getSelectionModel().select(sel);
+        });
+
         vm.loadAllDocuments();
+        vm.loadTemplates();
     }
 
     public void setMainController(MainController mc) { this.mainController = mc; }
 
     @FXML private void onNewDocument() { if (mainController != null) mainController.onNewDocument(); }
+
+    @FXML private void onAddTemplate() {
+        javafx.stage.FileChooser fc = new javafx.stage.FileChooser();
+        fc.setTitle("Select DOCX Template");
+        fc.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Word Documents", "*.docx"));
+        java.io.File file = fc.showOpenDialog(templateList.getScene().getWindow());
+        if (file != null) viewModel.addTemplate(file);
+    }
 
     @FXML private void onFilter() {
         String q = searchField.getText().toLowerCase().trim();

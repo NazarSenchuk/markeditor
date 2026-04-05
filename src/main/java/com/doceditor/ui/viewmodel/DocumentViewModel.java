@@ -16,6 +16,8 @@ public class DocumentViewModel {
     private final StringProperty statusMessage = new SimpleStringProperty("Ready");
     private final BooleanProperty numberSections = new SimpleBooleanProperty(false);
     private final BooleanProperty tableOfContents = new SimpleBooleanProperty(false);
+    private final ObservableList<String> templates = FXCollections.observableArrayList();
+    private final StringProperty selectedTemplate = new SimpleStringProperty(null);
     private final DocumentService documentService;
     private boolean loading = false;
 
@@ -72,6 +74,28 @@ public class DocumentViewModel {
         statusMessage.set("Deleted document");
     }
 
+    public void loadTemplates() {
+        java.io.File dir = new java.io.File("templates");
+        if (!dir.exists()) dir.mkdirs();
+        java.io.File[] files = dir.listFiles((d, name) -> name.endsWith(".docx"));
+        templates.clear();
+        if (files != null) {
+            for (java.io.File f : files) templates.add(f.getName());
+        }
+    }
+
+    public void addTemplate(java.io.File source) {
+        try {
+            java.io.File target = new java.io.File("templates", source.getName());
+            java.nio.file.Files.copy(source.toPath(), target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            loadTemplates();
+            selectedTemplate.set(target.getName());
+            statusMessage.set("Added template: " + source.getName());
+        } catch (java.io.IOException e) {
+            statusMessage.set("Failed to add template: " + e.getMessage());
+        }
+    }
+
     public ObservableList<Document> documentsProperty() { return documents; }
     public ObjectProperty<Document> currentDocumentProperty() { return currentDocument; }
     public StringProperty markdownContentProperty() { return markdownContent; }
@@ -80,6 +104,8 @@ public class DocumentViewModel {
     public StringProperty statusMessageProperty() { return statusMessage; }
     public BooleanProperty numberSectionsProperty() { return numberSections; }
     public BooleanProperty tableOfContentsProperty() { return tableOfContents; }
+    public ObservableList<String> templatesProperty() { return templates; }
+    public StringProperty selectedTemplateProperty() { return selectedTemplate; }
     public Document getCurrentDocument() { return currentDocument.get(); }
     public boolean isDirty() { return isDirty.get(); }
 }

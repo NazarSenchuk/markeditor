@@ -66,10 +66,9 @@ public class MainController implements Initializable {
     @FXML private void onExportDocx() {
         if (!validate()) return;
         Path dir = pickDir(); if (dir == null) return;
-        FileChooser fc = new FileChooser();
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("DOCX", "*.docx"));
-        File tpl = fc.showOpenDialog(getStage());
-        exportService.exportDocx(viewModel.getCurrentDocument(), dir, tpl != null ? tpl.toPath() : null, viewModel.numberSectionsProperty().get(), viewModel.tableOfContentsProperty().get());
+        String tplName = viewModel.selectedTemplateProperty().get();
+        Path tplPath = (tplName != null) ? new File("templates", tplName).toPath() : null;
+        exportService.exportDocx(viewModel.getCurrentDocument(), dir, tplPath, viewModel.numberSectionsProperty().get(), viewModel.tableOfContentsProperty().get());
     }
 
     @FXML private void onExportPdf() {

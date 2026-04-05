@@ -16,7 +16,7 @@ User types in editor
    ┌────┴──────────────────┐
    ▼                        ▼
 Save as .md file        Pandoc CLI
-(local + S3)                │
+(local storage)             │
                             ▼
                    ┌────────┴────────┐
                    ▼        ▼        ▼
@@ -38,7 +38,7 @@ This is a paragraph of text.
 | 1     | 2     |
 ```
 
-→ Saved as `<uuid>.md` locally and to S3  
+→ Saved as `<uuid>.md` and `<uuid>.meta.json` locally  
 → Preview rendered in `WebView` using **Pandoc** (md → HTML)  
 → Export: `pandoc input.md --reference-doc=business.docx -o output.docx`
 
@@ -49,13 +49,12 @@ This is a paragraph of text.
 ```
 com.doceditor/
 │
-├── document/                        ← What a document IS
-│   ├── Document.java                ← id, title, markdownContent, timestamps
-│   └── DocumentMetadata.java        ← author, tags, sync status
+├── document/                        ← Core domain
+│   └── Document.java                ← id, title, markdownContent, timestamps
 │
-├── storage/                         ← Saving and loading files locally
-│   ├── LocalMarkdownStorage.java    ← Stores .md files in ~/.doceditor/documents/
-│   ├── DocumentMeta.java            ← Lightweight metadata record
+├── storage/                         ← Persistence layer
+│   ├── LocalMarkdownStorage.java    ← Stores .md and .meta.json files
+│   ├── DocumentMeta.java            ← Lightweight metadata record (JSON)
 │   └── StorageException.java
 │
 ├── export/                          ← Converting documents to other formats
@@ -88,11 +87,10 @@ public class Document {
     UUID   id;
     String title;
     String markdownContent;    // ← the entire document body
-    String author;
-    List<String> tags;
-    SyncStatus syncStatus;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+
+    // Helper methods: touch(), getSummary()
 }
 ```
 
@@ -106,8 +104,7 @@ That's it. No element list, no style map, no template field.
 ~/.doceditor/
 └── documents/
     ├── <uuid>.md           ← document content
-    ├── <uuid>.meta.json    ← title, author, tags, syncStatus, timestamps
-    └── ...
+    └── <uuid>.meta.json    ← id, title, timestamps
 ```
 
 - Content and metadata stored separately — metadata is tiny JSON, content is raw Markdown
@@ -119,23 +116,19 @@ That's it. No element list, no style map, no template field.
 
 ```java
 public class PandocRunner {
-
-    // Export to DOCX, optionally applying a .docx reference template
-    public Path toDocx(Path mdFile, Path outputDir, Path referenceDocx) {
-        List<String> cmd = new ArrayList<>(List.of(
-            "pandoc", mdFile.toString(),
-            "-o", outputDir.resolve("output.docx").toString()
-        ));
-        if (referenceDocx != null) {
-            cmd.add("--reference-doc=" + referenceDocx);
-        }
-        new ProcessBuilder(cmd).start().waitFor();
-        return outputDir.resolve("output.docx");
+    // Export to HTML for live preview
+    public String toHtml(String markdown) {
+        // pandoc -f markdown -t html --mathjax
     }
 
-    // Export to PDF (via docx intermediate)
-    public Path toPdf(Path mdFile, Path outputDir) {
-        // pandoc input.md -o output.pdf  (uses LaTeX or wkhtmltopdf)
+    // Export to DOCX with reference template
+    public void toDocx(Path mdFile, Path outputFile, Path templateDocx) {
+        // pandoc md -o docx --reference-doc=template.docx
+    }
+
+    // Export to PDF via xelatex engine
+    public void toPdf(Path mdFile, Path outputFile) {
+        // pandoc md -o pdf --pdf-engine=xelatex
     }
 }
 ```
@@ -156,23 +149,13 @@ No Java `Template` class needed. User picks a `.docx` from a dropdown → passed
 ### ExportService — orchestrates the pipeline
 
 ```java
-public class ExportService {
-
-    public Path exportMarkdown(Document doc, Path outputDir) {
-        // Write markdownContent to file
-    }
-
-    public Path exportDocx(Document doc, Path outputDir, Path referenceTemplate) {
-        Path mdFile = exportMarkdown(doc, tempDir);
-        return pandocRunner.toDocx(mdFile, outputDir, referenceTemplate);
-    }
-
-    public Path exportPdf(Document doc, Path outputDir) {
-        Path mdFile = exportMarkdown(doc, tempDir);
-        return pandocRunner.toPdf(mdFile, outputDir);
-    }
-}
+// Logic moved to ExportService.java classes below
 ```
+
+1. **Format**: Uses `MarkdownFormatter` to fix LaTeX math delimiters for Pandoc ($ .. $).
+2. **Temporary storage**: Saves Markdown to `/tmp/doceditor/` before conversion.
+3. **Conversion**: Calls `PandocRunner` with specific flags (standing alone, TOC, section numbering).
+4. **Cleanup**: Removes temporary files.
 
 ---
 
@@ -195,9 +178,9 @@ public class ExportService {
   Sidebar                     Editor (CodeArea) | Preview (WebView)
 ```
 
-- **Editor**: `CodeArea` from RichTextFX — Markdown syntax highlighting (optional: split with live preview via `WebView`)
-- **Toolbar**: Buttons that insert Markdown snippets (e.g. `##` for H2, `| | |\n|-|-|` for table)
-- **Sidebar**: Document list with `SyncStatus` badges
+- **Editor**: `CodeArea` from RichTextFX — Markdown syntax highlighting.
+- **Toolbar**: Buttons that insert Markdown snippets (e.g. `##` for H2, `| | |\n|-|-|` for table).
+- **Sidebar**: Document list with local storage status.
 
 ---
 
@@ -237,10 +220,10 @@ public class DocumentViewModel {
 ## Build Order
 
 ```
-1. document/          ← Document + DocumentMetadata POJOs
-2. storage/           ← read/write .md and .meta.json files
-3. export/            ← PandocRunner + ExportService
-4. app/               ← DocumentService wires 2+3
+1. document/          ← Document model
+2. storage/           ← LocalMarkdownStorage + DocumentMeta record
+3. export/            ← PandocRunner + ExportService + MarkdownFormatter
+4. app/               ← DocumentService logic
 5. ui/                ← JavaFX controllers + viewmodel
 ```
 
