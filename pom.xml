@@ -22,7 +22,6 @@
         <javafx.version>21.0.2</javafx.version>
         <richtextfx.version>0.11.3</richtextfx.version>
         <jackson.version>2.17.0</jackson.version>
-        <lombok.version>1.18.32</lombok.version>
         <slf4j.version>2.0.12</slf4j.version>
         <logback.version>1.5.3</logback.version>
         <junit.version>5.10.2</junit.version>
@@ -69,13 +68,6 @@
             <version>${jackson.version}</version>
         </dependency>
 
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
-        </dependency>
 
         <!-- Logging -->
         <dependency>
@@ -127,13 +119,6 @@
                 <version>3.13.0</version>
                 <configuration>
                     <release>21</release>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
 
@@ -144,20 +129,48 @@
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>com.doceditor.ui.App</mainClass>
-                    <!-- jpackage configuration for native artifacts -->
-                    <jpackageOptions>
-                        <option>--name</option>
-                        <option>DocumentEditor</option>
-                        <option>--vendor</option>
-                        <option>DocEditor</option>
-                        <option>--description</option>
-                        <option>Markdown Document Editor with Pandoc</option>
-                        <option>--type</option>
-                        <option>msi</option>
-                        <option>--win-dir-chooser</option>
-                        <option>--win-menu</option>
-                        <option>--win-shortcut</option>
-                    </jpackageOptions>
+                </configuration>
+            </plugin>
+
+            <!-- Copy dependencies for jpackage -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/libs</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- JPackage plugin for native artifacts -->
+            <plugin>
+                <groupId>org.panteleyev</groupId>
+                <artifactId>jpackage-maven-plugin</artifactId>
+                <version>1.6.2</version>
+                <configuration>
+                    <name>DocumentEditor</name>
+                    <vendor>DocEditor</vendor>
+                    <appVersion>1.0.0</appVersion>
+                    <description>Markdown Document Editor with Pandoc</description>
+                    <destination>${project.build.directory}/dist</destination>
+                    <modulePath>${project.build.directory}/libs</modulePath>
+                    <input>${project.build.directory}/libs</input>
+                    <mainJar>document-editor-1.0.0-SNAPSHOT.jar</mainJar>
+                    <mainClass>com.doceditor.ui.App</mainClass>
+                    <type>MSI</type>
+                    <winDirChooser>true</winDirChooser>
+                    <winMenu>true</winMenu>
+                    <winShortcut>true</winShortcut>
                 </configuration>
             </plugin>
 

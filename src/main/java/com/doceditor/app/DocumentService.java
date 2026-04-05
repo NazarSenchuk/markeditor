@@ -2,19 +2,20 @@ package com.doceditor.app;
 
 import com.doceditor.document.Document;
 import com.doceditor.storage.LocalMarkdownStorage;
-import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.UUID;
 
-@RequiredArgsConstructor
 public class DocumentService {
     private final LocalMarkdownStorage storage;
 
+    public DocumentService(LocalMarkdownStorage storage) {
+        this.storage = storage;
+    }
+
     public Document create(String title) {
-        Document doc = Document.builder()
-                .title(title)
-                .markdownContent("# " + title + "\n\n")
-                .build();
+        Document doc = new Document();
+        doc.setTitle(title);
+        doc.setMarkdownContent("# " + title + "\n\n");
         storage.save(doc);
         return doc;
     }

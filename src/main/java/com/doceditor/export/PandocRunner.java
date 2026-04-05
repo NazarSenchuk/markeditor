@@ -1,7 +1,5 @@
 package com.doceditor.export;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -9,7 +7,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class PandocRunner {
-    private static final Logger log = LoggerFactory.getLogger(PandocRunner.class);
     private static final int TIMEOUT_SECONDS = 60;
 
     public void toDocx(Path mdFile, Path outputFile, Path templateDocx, boolean numberSections, boolean toc) {

@@ -17,7 +17,11 @@ public class LocalMarkdownStorage {
     private final ObjectMapper mapper;
 
     public LocalMarkdownStorage() {
-        this.docsDir = Path.of(System.getProperty("user.home"), ".doceditor", "documents");
+        this(Path.of(System.getProperty("user.home"), ".doceditor", "documents"));
+    }
+
+    public LocalMarkdownStorage(Path docsDir) {
+        this.docsDir = docsDir;
         this.mapper = new ObjectMapper().registerModule(new JavaTimeModule());
         ensureDirectoryExists();
     }

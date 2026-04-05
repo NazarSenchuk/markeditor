@@ -17,12 +17,6 @@ public record DocumentMeta(
     }
 
     public Document toDocument(String content) {
-        return Document.builder()
-                .id(id)
-                .title(title)
-                .markdownContent(content)
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
-                .build();
+        return new Document(id, title, content, createdAt, updatedAt);
     }
 }
