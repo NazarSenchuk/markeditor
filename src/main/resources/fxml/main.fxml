@@ -2,51 +2,64 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.web.WebView?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.doceditor.ui.controller.MainController"
-            stylesheets="@../css/dark-theme.css"
-            prefWidth="1200" prefHeight="760">
+            fx:controller="com.simpleditor.MainController"
+            stylesheets="@../css/dark-theme.css">
 
-    <!-- Top: Menu bar -->
     <top>
-        <MenuBar fx:id="menuBar" styleClass="menu-bar">
-            <Menu text="File">
-                <MenuItem fx:id="newDocItem"    text="New Document"  accelerator="Ctrl+N"    onAction="#onNewDocument"/>
-                <MenuItem fx:id="saveDocItem"   text="Save"          accelerator="Ctrl+S"    onAction="#onSave"/>
-                <MenuItem fx:id="deleteDocItem" text="Delete"        onAction="#onDelete"/>
-                <SeparatorMenuItem/>
-                <MenuItem fx:id="quitItem"      text="Quit"          accelerator="Ctrl+Q"    onAction="#onQuit"/>
-            </Menu>
-            <Menu text="Export">
-                <MenuItem fx:id="exportMdItem"   text="Export as Markdown…"  onAction="#onExportMarkdown"/>
-                <MenuItem fx:id="exportDocxItem" text="Export as DOCX…"      onAction="#onExportDocx"/>
-                <MenuItem fx:id="exportPdfItem"  text="Export as PDF…"       onAction="#onExportPdf"/>
-            </Menu>
-            <Menu text="Help">
-                <MenuItem text="About" onAction="#onAbout"/>
-            </Menu>
-        </MenuBar>
+        <VBox>
+            <MenuBar>
+                <Menu text="Файл">
+                    <MenuItem text="Новий" accelerator="Ctrl+N" onAction="#onNewDocument"/>
+                    <MenuItem text="Зберегти" accelerator="Ctrl+S" onAction="#onSave"/>
+                    <MenuItem text="Видалити" onAction="#onDelete"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="Вийти" accelerator="Ctrl+Q" onAction="#onQuit"/>
+                </Menu>
+                <Menu text="Експорт">
+                    <MenuItem text="Markdown..." onAction="#onExportMarkdown"/>
+                    <MenuItem text="DOCX..." onAction="#onExportDocx"/>
+                    <MenuItem text="PDF..." onAction="#onExportPdf"/>
+                </Menu>
+                <Menu text="Шаблони">
+                    <MenuItem text="Додати шаблон..." onAction="#onAddTemplate"/>
+                </Menu>
+            </MenuBar>
+
+            <ToolBar>
+                <Label>Заголовок:</Label>
+                <TextField fx:id="titleField" promptText="Назва документа"/>
+                <Separator/>
+                <CheckBox fx:id="numberSectionsCheck" text="Нумерація розділів"/>
+                <CheckBox fx:id="tocCheck" text="Зміст"/>
+                <Separator/>
+                <Label>Шаблон DOCX:</Label>
+                <ComboBox fx:id="templateComboBox" prefWidth="200"/>
+                <Button text="+" onAction="#onAddTemplate"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <ToggleButton fx:id="previewToggle" text="Попередній перегляд" onAction="#onTogglePreview"/>
+            </ToolBar>
+        </VBox>
     </top>
 
-    <!-- Center: Sidebar + Editor split -->
     <center>
-        <SplitPane fx:id="mainSplit" dividerPositions="0.22">
-            <!-- Sidebar -->
-            <fx:include fx:id="sidebar" source="sidebar.fxml"/>
-            <!-- Editor + toolbar -->
-            <fx:include fx:id="editor"  source="editor.fxml"/>
+        <SplitPane dividerPositions="0.25">
+            <VBox>
+                <Label text="Документи" style="-fx-font-weight: bold; -fx-padding: 8;"/>
+                <ListView fx:id="documentListView" VBox.vgrow="ALWAYS"/>
+            </VBox>
+            <SplitPane fx:id="editorSplit" orientation="VERTICAL" dividerPositions="0.6">
+                <TextArea fx:id="editorTextArea" style="-fx-font-family: monospace; -fx-font-size: 14px;"/>
+                <WebView fx:id="previewWebView" visible="false" managed="false"/>
+            </SplitPane>
         </SplitPane>
     </center>
 
-    <!-- Bottom: Status bar -->
     <bottom>
-        <HBox styleClass="status-bar" spacing="8" alignment="CENTER_LEFT">
-            <padding><Insets top="4" bottom="4" left="12" right="12"/></padding>
-            <Label fx:id="statusLabel" text="Ready" styleClass="status-text"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label fx:id="dirtyIndicator" text="" styleClass="dirty-dot"/>
+        <HBox style="-fx-background-color: #2b2b2b; -fx-padding: 4 8;">
+            <Label fx:id="statusLabel" text="Готово"/>
         </HBox>
     </bottom>
-
 </BorderPane>
