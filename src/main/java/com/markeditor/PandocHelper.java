@@ -1,4 +1,4 @@
-package com.simpleditor;
+package com.markeditor;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -65,29 +65,39 @@ public class PandocHelper {
             cmd.add("--number-sections");
         if (toc) {
             cmd.add("--toc");
-            cmd.add("--toc-title=ЗМІСТ");
+
         }
         runProcess(cmd, null);
     }
 
     public static void toPdf(File mdFile, File outFile, boolean numberSections, boolean toc) throws Exception {
-        File tempDocx = File.createTempFile("temp", ".docx");
-        tempDocx.deleteOnExit();
-        toDocx(mdFile, tempDocx, null, numberSections, toc);
+        String content = Files.readString(mdFile.toPath(), StandardCharsets.UTF_8);
+        String prepared = prepareMath(content);
+        File tempMd = File.createTempFile("temp", ".md");
+        tempMd.deleteOnExit();
+        Files.writeString(tempMd.toPath(), prepared, StandardCharsets.UTF_8);
+
         List<String> cmd = new ArrayList<>();
         cmd.add("pandoc");
-        cmd.add(tempDocx.getAbsolutePath());
+        cmd.add(tempMd.getAbsolutePath());
         cmd.add("--pdf-engine=xelatex");
+        cmd.add("--standalone");
         cmd.add("-V");
         cmd.add("mainfont=DejaVu Serif");
         cmd.add("-V");
         cmd.add("mathfont=DejaVu Serif");
         cmd.add("-V");
         cmd.add("lang=uk");
+        if (numberSections) {
+            cmd.add("--number-sections");
+        }
+        if (toc) {
+            cmd.add("--toc");
+        }
         cmd.add("-o");
         cmd.add(outFile.getAbsolutePath());
         runProcess(cmd, null);
-        Files.deleteIfExists(tempDocx.toPath());
+        Files.deleteIfExists(tempMd.toPath());
     }
 
     public static String toHtml(String markdown, boolean numberSections, boolean toc) throws Exception {

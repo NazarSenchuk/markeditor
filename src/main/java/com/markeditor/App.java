@@ -1,4 +1,4 @@
-package com.simpleditor;
+package com.markeditor;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

@@ -5,7 +5,7 @@
 <?import javafx.scene.web.WebView?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.simpleditor.MainController"
+            fx:controller="com.markeditor.MainController"
             stylesheets="@../css/dark-theme.css">
 
     <top>
@@ -26,6 +26,10 @@
                 <Menu text="Шаблони">
                     <MenuItem text="Додати шаблон..." onAction="#onAddTemplate"/>
                 </Menu>
+                <Menu text="Інструменти">
+                    <MenuItem text="Знайти" accelerator="Ctrl+F" onAction="#onFind"/>
+                    <MenuItem text="Статистика" onAction="#onShowStatistics"/>
+                </Menu>
             </MenuBar>
 
             <ToolBar>
@@ -40,6 +44,23 @@
                 <Button text="+" onAction="#onAddTemplate"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <ToggleButton fx:id="previewToggle" text="Попередній перегляд" onAction="#onTogglePreview"/>
+            </ToolBar>
+
+            <ToolBar>
+                <Button text="Знайти" onAction="#onFind"/>
+                <Separator/>
+                <Button text="H1" onAction="#onFormatH1" style="-fx-font-weight: bold;"/>
+                <Button text="H2" onAction="#onFormatH2" style="-fx-font-weight: bold;"/>
+                <Separator/>
+                <Button text="B" onAction="#onFormatBold" style="-fx-font-weight: bold;"/>
+                <Button text="I" onAction="#onFormatItalic" style="-fx-font-style: italic;"/>
+                <Separator/>
+                <Button text="-" onAction="#onFormatBulletList"/>
+                <Button text="1." onAction="#onFormatNumberedList"/>
+                <Button text="[ ]" onAction="#onFormatCheckbox"/>
+                <Separator/>
+                <Button text="&gt;" onAction="#onFormatQuote"/>
+                <Button text="&lt;/&gt;" onAction="#onFormatCode"/>
             </ToolBar>
         </VBox>
     </top>
